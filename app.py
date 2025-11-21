@@ -31,7 +31,7 @@ try:
     if mode == "🚀 极速响应 (Flash)":
         # 这里用 Flash 模型，追求速度
         # 如果你的账号不支持 flash，可以改回 'models/gemini-3-pro-preview'
-        target_model = "models/gemini-1.5-flash" 
+        target_model = "models/gemini-3-flash" 
         sys_instruction = "你是一个简洁高效的助手。回答要快，直接切入重点。"
         
     else: # 深度思考模式
