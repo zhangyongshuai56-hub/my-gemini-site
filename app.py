@@ -9,7 +9,7 @@ api_key = st.secrets["GOOGLE_API_KEY"]
 
 # 配置模型
 genai.configure(api_key=api_key)
-model = genai.GenerativeModel('gemini-1.5-flash')
+model = genai.GenerativeModel('gemini-pro')
 
 # 初始化聊天记录
 if "messages" not in st.session_state:
