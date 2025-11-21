@@ -1,37 +1,29 @@
 import streamlit as st
 import google.generativeai as genai
 
-# 页面标题
-st.title("我的私人 AI 助手")
+st.title("🔍 账号诊断模式")
+st.write("正在连接 Google 服务器查询可用模型...")
 
-# 获取密钥 (会自动从云端设置里读取)
-api_key = st.secrets["GOOGLE_API_KEY"]
+try:
+    # 1. 获取 Key
+    api_key = st.secrets["GOOGLE_API_KEY"]
+    genai.configure(api_key=api_key)
 
-# 配置模型
-genai.configure(api_key=api_key)
-model = genai.GenerativeModel('gemini-pro')
+    # 2. 列出所有可用模型
+    available_models = []
+    for m in genai.list_models():
+        if 'generateContent' in m.supported_generation_methods:
+            available_models.append(m.name)
 
-# 初始化聊天记录
-if "messages" not in st.session_state:
-    st.session_state.messages = []
+    # 3. 显示结果
+    if available_models:
+        st.success(f"恭喜！成功连接。你的账号支持以下模型：")
+        for model_name in available_models:
+            st.code(model_name) # 把这些名字显示出来
+        st.info("请把上面显示的任何一个名字（例如 models/gemini-pro）复制下来告诉我！")
+    else:
+        st.error("连接成功，但没有发现可用模型。这通常意味着 API Key 权限受限。")
 
-# 展示历史聊天
-for message in st.session_state.messages:
-    with st.chat_message(message["role"]):
-        st.markdown(message["content"])
-
-# 接收用户输入
-if prompt := st.chat_input("问我任何问题..."):
-    # 显示你的问题
-    with st.chat_message("user"):
-        st.markdown(prompt)
-    st.session_state.messages.append({"role": "user", "content": prompt})
-
-    # 调用 Gemini 回答
-    try:
-        response = model.generate_content(prompt)
-        with st.chat_message("assistant"):
-            st.markdown(response.text)
-        st.session_state.messages.append({"role": "assistant", "content": response.text})
-    except Exception as e:
-        st.error(f"出错啦: {e}")
+except Exception as e:
+    st.error(f"严重错误: {e}")
+    st.warning("请检查 Streamlit 的 Secrets 里是否正确填写了 GOOGLE_API_KEY")
